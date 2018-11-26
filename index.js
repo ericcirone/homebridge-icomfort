@@ -415,10 +415,10 @@ Thermostat.prototype = {
 
 // function to convert Celcius to Farenheit
 function cToF(celsius) {
-  return Math.floor(celsius * 9 / 5 + 32);
+  return Math.round(celsius * 9 / 5 + 32);
 }
 
 // function to convert Farenheit to Celcius
 function fToC(fahrenheit) {
-  return Math.floor((fahrenheit - 32) * 5 / 9);
+  return Math.round((fahrenheit - 32) * 5 / 9);
 }
