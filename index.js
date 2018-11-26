@@ -44,7 +44,7 @@ function Thermostat(log, config) {
         this.gatewaySN = config.gatewaySN;
 	this.zoneNumber = config.zoneNumber || 0;
 
-        this.temperatureDisplayUnits = 0; //FARENHEIT iComfort is inverse of the TemperatureDisplayUnits characteristic 
+        this.temperatureDisplayUnits = 0; //FARENHEIT iComfort is inverse of the TemperatureDisplayUnits characteristic
 	this.temperatureUnits = 0;
 	this.currentHeatingCoolingState = Characteristic.CurrentHeatingCoolingState.OFF;
 	this.targetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.OFF;
@@ -99,7 +99,7 @@ Thermostat.prototype = {
 
                 if (value === false) {
                   newOptions = {
-                    'awaymode': 0 
+                    'awaymode': 0
                   };
                 } else if (value === true) {
                   newOptions = {
@@ -132,7 +132,7 @@ Thermostat.prototype = {
 	getTargetHeatingCoolingState: function(callback) {
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 if (currentSettings.Operation_Mode === 0) {
                   this.targetHeatingCoolingState = Characteristic.TargetHeatingCoolingState.OFF;
                 } else if (currentSettings.Operation_Mode === 1) {
@@ -150,14 +150,14 @@ Thermostat.prototype = {
                 var newOptions;
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 if (value === 0) {
                   newOptions = {
-                    Operation_Mode: 0 
+                    Operation_Mode: 0
                   };
                 } else if (value === 1) {
                   newOptions = {
-                    Operation_Mode: 1 
+                    Operation_Mode: 1
                   };
                 } else if (value === 2) {
                   newOptions = {
@@ -177,7 +177,7 @@ Thermostat.prototype = {
 	getCurrentTemperature: function(callback) {
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 this.currentTemperature = currentSettings.Indoor_Temp;
 		this.log("getCurrentTemperature: " + this.currentTemperature);
                 callback(null,fToC(this.currentTemperature));
@@ -186,7 +186,7 @@ Thermostat.prototype = {
 	getTargetTemperature: function(callback) {
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 if (currentSettings.Operation_Mode === 0) {
                   this.targetTemperature = currentSettings.Cool_Set_Point;
                 } else if (currentSettings.Operation_Mode === 1) {
@@ -204,7 +204,7 @@ Thermostat.prototype = {
                 var newOptions;
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 if (currentSettings.Operation_Mode === 0) {
                   newOptions = {
                     Cool_Set_Point: cToF(value)
@@ -217,7 +217,7 @@ Thermostat.prototype = {
                   newOptions = {
                     Cool_Set_Point: cToF(value)
                   };
-		} 
+		}
                 const newSettings = Object.assign({}, currentSettings, newOptions);
                 this.icomfort.setThermostatInfo(newSettings);
                 this.log("setTargetTemperature: " + newSettings.Operation_Mode + " : " + cToF(value));
@@ -227,27 +227,27 @@ Thermostat.prototype = {
         getTemperatureDisplayUnits: function(callback) {
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
                 if (currentSettings.Pref_Temp_Units === "0") { //lennox FARENHEIT
 		  this.temperatureDisplayUnits = 1;
                 } else if (currentSettings.Pref_Temp_Units === "1") { //lennox CELSIUS
                   this.temperatureDisplayUnits = 0;
 		}
-                this.log("getTemperatureDisplayUnits:" + this.temperatureDisplayUnits); 
-                callback(null, this.temperatureDisplayUnits); 
+                this.log("getTemperatureDisplayUnits:" + this.temperatureDisplayUnits);
+                callback(null, this.temperatureDisplayUnits);
 		});
         },
-	// Currently doesn't work 
+	// Currently doesn't work
         setTemperatureDisplayUnits: function(value, callback) {
                 var newOptions;
                 this.icomfort.getThermostatInfoList({GatewaySN: this.gatewaySN, TempUnit: this.temperatureUnits})
                   .then(res => {
-                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber); 
-                if (value === 0) { 
+                    var currentSettings = res.tStatInfo.find(tStat => tStat.Zone_Number === this.zoneNumber);
+                if (value === 0) {
 		  newOptions = {
 		    Pref_Temp_Units: "1"
-		  }; 
-                } else if (value === 1) { 
+		  };
+                } else if (value === 1) {
 		  newOptions = {
 		    Pref_Temp_Units: "0"
 		  };
@@ -385,14 +385,14 @@ Thermostat.prototype = {
 			.setProps({
 				minValue: 16,
 				maxValue: 31,
-				minStep: .1 
+				minStep: .1
 			});
 		this.service
 			.getCharacteristic(Characteristic.CoolingThresholdTemperature)
 			.setProps({
                                 minValue: 16,
                                 maxValue: 31,
-				minStep: .1 
+				minStep: .1
 			});
                 this.service
                         .getCharacteristic(Characteristic.CurrentTemperature)
@@ -415,10 +415,10 @@ Thermostat.prototype = {
 
 // function to convert Celcius to Farenheit
 function cToF(celsius) {
-  return celsius * 9 / 5 + 32;
+  return Math.floor(celsius * 9 / 5 + 32);
 }
 
 // function to convert Farenheit to Celcius
 function fToC(fahrenheit) {
-  return (fahrenheit - 32) * 5 / 9;
+  return Math.floor((fahrenheit - 32) * 5 / 9);
 }
